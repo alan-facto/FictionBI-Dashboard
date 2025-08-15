@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Financeiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="icon" href="data:,"> <!-- Prevents 404 for missing favicon -->
+</head>
+<body>
+  <div class="container">
+    <div class="view-toggle">
+      <button id="btn-expenses-main" class="active">Gastos</button> <!-- Renamed button -->
+      <button id="btn-earnings-main">Faturamento</button> <!-- New Faturamento button -->
+      <button id="btn-tables-main">Tabelas</button> <!-- Renamed button -->
+    </div>
+
+    <!-- Charts View (now "Gastos" view) -->
+    <div id="charts-view">
+      <!-- Row 1: Total Expenditures -->
+      <div class="chart-row single" id="total-expenditures-wrapper">
+        <div class="card">
+          <img src="assets/logo.png" alt="Facto Logo" class="facto-logo">
+          <h2>Gastos Totais ao Longo do Tempo</h2>
+          <div class="time-filters">
+            <button class="filter-btn time-btn" data-months="3">3 Meses</button>
+            <button class="filter-btn time-btn" data-months="6">6 Meses</button>
+            <button class="filter-btn time-btn active" data-months="12">12 Meses</button>
+          </div>
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-department="all">Todos</button>
+            <button class="filter-btn" data-department="Administrativo">Administrativo</button>
+            <button class="filter-btn" data-department="Comercial">Comercial</button>
+            <button class="filter-btn" data-department="Diretoria">Diretoria</button>
+            <button class="filter-btn" data-department="Operação">Operação</button>
+            <button class="filter-btn" data-department="RH">RH</button>
+            <button class="filter-btn" data-department="NEC">NEC</button>
+            <button class="filter-btn" data-department="Apoio">Apoio</button>
+            <button class="filter-btn" data-department="Marketing">Marketing</button>
+            <button class="filter-btn" data-department="Jurídico">Jurídico</button>
+          </div>
+          <div class="chart-container">
+            <canvas id="total-expenditures-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Department Trends -->
+      <div class="chart-row single" id="department-trends-wrapper">
+        <div class="card">
+          <h2>Gastos por Departamento</h2>
+          <div class="time-filters">
+            <button class="filter-btn time-btn" data-months="3">3 Meses</button>
+            <button class="filter-btn time-btn" data-months="6">6 Meses</button>
+            <button class="filter-btn time-btn active" data-months="12">12 Meses</button>
+          </div>
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-departments='all'>Mostrar Todos</button>
+            <button class="filter-btn" data-departments='["Comercial","Diretoria","Operação"]'>Principais</button>
+            <button class="filter-btn" data-departments='["Administrativo","RH","NEC","Apoio","Marketing","Jurídico"]'>Demais</button>
+          </div>
+          <div class="chart-container">
+            <canvas id="department-trends-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Average Expenditure & Employees -->
+      <div class="chart-row double">
+        <div class="card half">
+          <h2>Média de Gastos por Funcionário</h2>
+          <div class="chart-container">
+            <canvas id="avg-expenditure-chart"></canvas>
+          </div>
+        </div>
+        <div class="card half">
+          <h2>Total de Funcionários</h2>
+          <div class="chart-container">
+            <canvas id="employees-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Percentage Stacked -->
+      <div class="chart-row single">
+        <div class="card">
+          <h2>Participação por Departamento</h2>
+          <div class="chart-container">
+            <canvas id="percentage-stacked-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: Department Breakdown -->
+      <div class="chart-row single">
+        <div class="card" id="department-breakdown-wrapper">
+          <h2>Distribuição de Gastos por Departamento (Últimos 6 Meses)</h2>
+          <div id="department-breakdown-charts"></div>
+          <div class="department-legend" id="department-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables View -->
+    <div id="tables-view" style="display: none;"> <!-- Corrected: outer div has ID -->
+      <div class="card">
+        <!-- Removed duplicate <div id="tables-view"> here -->
+        <div class="table-toggle-container">
+          <button id="btn-summary-month" class="table-toggle-btn active">Resumo por Mês</button>
+          <button id="btn-summary-department" class="table-toggle-btn">Resumo por Departamento</button>
+          <button id="btn-detailed-month" class="table-toggle-btn">Detalhado por Mês</button>
+          <button id="btn-detailed-department" class="table-toggle-btn">Detalhado por Departamento</button>
+          <button id="btn-earnings-table" class="table-toggle-btn">Faturamento</button> <!-- New button -->
+        </div>
+
+        <div id="table-summary-month" style="display: block;"></div>
+        <div id="table-summary-department" style="display: none;"></div>
+        <div id="table-detailed-month" style="display: none;"></div>
+        <div id="table-detailed-department" style="display: none;"></div>
+        <div id="table-earnings" style="display: none;"></div> <!-- New table container -->
+      </div>
+    </div>
+
+    <!-- New Earnings View -->
+    <div id="earnings-view" style="display: none;">
+        <!-- Row 1: Earnings vs Total Costs -->
+        <div class="chart-row single">
+            <div class="card">
+                <h2>Faturamento vs. Gastos Totais</h2>
+                <div class="chart-container">
+                    <canvas id="earnings-vs-costs-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Net Profit/Loss -->
+        <div class="chart-row single">
+            <div class="card">
+                <h2>Lucro / Prejuízo Líquido Mensal</h2>
+                <div class="chart-container">
+                    <canvas id="net-profit-loss-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Profit Margin Percentage -->
+        <div class="chart-row single">
+            <div class="card">
+                <h2>Margem de Lucro Percentual</h2>
+                <div class="chart-container">
+                    <canvas id="profit-margin-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Earnings per Employee -->
+        <div class="chart-row single">
+            <div class="card">
+                <h2>Faturamento por Funcionário</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" id="toggle-earnings-per-employee">Ver Faturamento por Funcionário (Operação)</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="earnings-per-employee-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 5: Contribution/Efficiency per Department -->
+        <div class="chart-row single">
+            <div class="card">
+                <h2>Contribuição de Gastos por Departamento ao Faturamento Total (%)</h2>
+                <div class="chart-container">
+                    <canvas id="contribution-efficiency-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  <script src="scripts/app.js"></script>
+</body>
+</html>
