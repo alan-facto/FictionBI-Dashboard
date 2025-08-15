@@ -1,4 +1,4 @@
-const apiUrl = "https://script.google.com/macros/s/AKfycbyHUho9j0-swZTJO4Fka_59Nv3GVFqo-Qfbp3yydchcKZaUUcs7HxlWZ5mUO6vjH4mPTA/exec";
+const apiUrl = "https://script.google.com/macros/s/AKfycbwZRxPpbhKgMrANVF68cZl11qfBjlCOJo6-mwpgykggYzbRdSwI5wKgnXm7CPyr05u2/exec";
 
 // Structure to hold processed data
 // Added 'earnings' property to each month's data to store revenue
@@ -1514,3 +1514,4 @@ function showError(message) {
         </div>
     `;
 }
+
